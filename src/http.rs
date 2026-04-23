@@ -1,13 +1,23 @@
 use actix_web::{HttpResponse, HttpServer, Responder, get};
 
+use crate::{
+    algo::{RateLimiterAlgo, token_bucket::TokenBucketLimiter},
+    ratelimiter::RateLimiter,
+};
+
 #[get("/")]
 async fn index() -> impl Responder {
-    HttpResponse::Ok().body("Hello, weaks!")
+    HttpResponse::Ok().body("Hello, ppl!")
 }
 
 #[get("/limited")]
 async fn limited() -> impl Responder {
-    HttpResponse::Ok().body("Limited! Uh no :(")
+    let mut rate_limiter = RateLimiterAlgo::TokenBucket(TokenBucketLimiter::new(5, 1.0));
+    if rate_limiter.is_allowed() {
+        HttpResponse::Ok().body("Allowed! Welcome :)")
+    } else {
+        HttpResponse::TooManyRequests().body("Too many requests! Please try again later.")
+    }
 }
 
 #[get("/unlimited")]

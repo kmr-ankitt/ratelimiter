@@ -14,14 +14,14 @@ use std::time::Instant;
 
 use crate::ratelimiter::RateLimiter;
 
-pub struct TokenBucket {
+pub struct TokenBucketLimiter {
     bucket_size: usize,
     refill_rate: f64,
     tokens: usize,
     last_refill_time: Instant,
 }
 
-impl TokenBucket {
+impl TokenBucketLimiter {
     pub fn new(bucket_size: usize, refill_rate: f64) -> Self {
         Self {
             bucket_size,
@@ -53,7 +53,7 @@ impl TokenBucket {
     }
 }
 
-impl RateLimiter for TokenBucket {
+impl RateLimiter for TokenBucketLimiter {
     fn is_allowed(&mut self) -> bool {
         self.consume()
     }

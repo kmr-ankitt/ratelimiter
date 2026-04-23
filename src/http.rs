@@ -1,4 +1,5 @@
-use actix_web::{HttpResponse, HttpServer, Responder, get};
+use actix_web::{web, HttpResponse, HttpServer, Responder, get};
+use std::sync::Mutex;
 
 use crate::{
     algo::{RateLimiterAlgo, token_bucket::TokenBucketLimiter},
@@ -11,8 +12,8 @@ async fn index() -> impl Responder {
 }
 
 #[get("/limited")]
-async fn limited() -> impl Responder {
-    let mut rate_limiter = RateLimiterAlgo::TokenBucket(TokenBucketLimiter::new(5, 1.0));
+async fn limited(data: web::Data<Mutex<RateLimiterAlgo>>) -> impl Responder {
+    let mut rate_limiter = data.lock().unwrap();
     if rate_limiter.is_allowed() {
         HttpResponse::Ok().body("Allowed! Welcome :)")
     } else {
@@ -29,8 +30,13 @@ async fn unlimited() -> impl Responder {
 pub async fn run() -> std::io::Result<()> {
     println!("Server running at http://localhost:8000");
 
-    HttpServer::new(|| {
+    let rate_limiter = web::Data::new(Mutex::new(RateLimiterAlgo::TokenBucket(
+        TokenBucketLimiter::new(5, 1.0),
+    )));
+
+    HttpServer::new(move || {
         actix_web::App::new()
+            .app_data(rate_limiter.clone())
             .service(index)
             .service(limited)
             .service(unlimited)

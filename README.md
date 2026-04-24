@@ -7,8 +7,8 @@
 
 - [x] [Token Bucket Algorithm]("https://en.wikipedia.org/wiki/Token_bucket")
 - [x] [Leaky Bucket Algorithm]("https://en.wikipedia.org/wiki/Leaky_bucket_algorithm")
-- [x] [Fixed Window Algorithm]("https://en.wikipedia.org/wiki/Fixed_window_algorithm")
-- [ ] [Sliding Window Algorithm]("https://en.wikipedia.org/wiki/Sliding_window_algorithm")
+- [x] [Fixed Window Algorithm]("#")
+- [ ] [Sliding Window Algorithm]("#")
 
 ## Usage
 

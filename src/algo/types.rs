@@ -1,6 +1,6 @@
 use crate::{
     algo::{
-        fixed_window::FixedWindowLimiter, leaking_bucket::LeakingBucketLimiter,
+        fixed_window::FixedWindowLimiter, leaky_bucket::LeakyBucketLimiter,
         token_bucket::TokenBucketLimiter,
     },
     ratelimiter::RateLimiter,
@@ -8,7 +8,7 @@ use crate::{
 
 pub enum RateLimiterAlgo {
     TokenBucket(TokenBucketLimiter),
-    LeakingBucket(LeakingBucketLimiter),
+    LeakyBucket(LeakyBucketLimiter),
     FixedWindow(FixedWindowLimiter),
 }
 
@@ -16,7 +16,7 @@ impl RateLimiter for RateLimiterAlgo {
     fn is_allowed(&mut self) -> bool {
         match self {
             RateLimiterAlgo::TokenBucket(token_bucket) => token_bucket.is_allowed(),
-            RateLimiterAlgo::LeakingBucket(leaking_bucket) => leaking_bucket.is_allowed(),
+            RateLimiterAlgo::LeakyBucket(leaky_bucket) => leaky_bucket.is_allowed(),
             RateLimiterAlgo::FixedWindow(fixed_window) => fixed_window.is_allowed(),
         }
     }

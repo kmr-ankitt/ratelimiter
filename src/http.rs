@@ -3,7 +3,7 @@ use std::sync::Mutex;
 
 use crate::{
     algo::{
-        RateLimiterAlgo, fixed_window::FixedWindowLimiter, leaking_bucket::LeakingBucketLimiter,
+        RateLimiterAlgo, fixed_window::FixedWindowLimiter, leaky_bucket::LeakyBucketLimiter,
         token_bucket::TokenBucketLimiter,
     },
     ratelimiter::RateLimiter,
@@ -57,8 +57,8 @@ pub async fn run() -> std::io::Result<()> {
         TokenBucketLimiter::new(5, 1.0),
     )));
 
-    let leaking_bucket_rate_limiter = web::Data::new(Mutex::new(RateLimiterAlgo::LeakingBucket(
-        LeakingBucketLimiter::new(5, 1.0),
+    let leaky_bucket_rate_limiter = web::Data::new(Mutex::new(RateLimiterAlgo::LeakyBucket(
+        LeakyBucketLimiter::new(5, 1.0),
     )));
 
     let fixed_window_rate_limiter = web::Data::new(Mutex::new(RateLimiterAlgo::FixedWindow(
@@ -68,7 +68,7 @@ pub async fn run() -> std::io::Result<()> {
     HttpServer::new(move || {
         actix_web::App::new()
             .app_data(token_bucket_rate_limiter.clone())
-            .app_data(leaking_bucket_rate_limiter.clone())
+            .app_data(leaky_bucket_rate_limiter.clone())
             .app_data(fixed_window_rate_limiter.clone())
             .service(index)
             .service(limited_tb)

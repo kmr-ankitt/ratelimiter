@@ -1,5 +1,5 @@
 /*!
-# Leaking Bucket Algorithm
+# Leaky Bucket Algorithm
 - Bucket has fixed capacity (`bucket_size`)
 - Water leaks out at a constant rate (`outflow_rate/second`)
 - Each request adds 1 unit of water to the bucket
@@ -13,14 +13,14 @@ use std::time::Instant;
 
 use crate::ratelimiter::RateLimiter;
 
-pub struct LeakingBucketLimiter {
+pub struct LeakyBucketLimiter {
     bucket_size: usize,
     outflow_rate: f64,
     water: f64,
     last_leak_time: Instant,
 }
 
-impl LeakingBucketLimiter {
+impl LeakyBucketLimiter {
     pub fn new(bucket_size: usize, outflow_rate: f64) -> Self {
         Self {
             bucket_size,
@@ -52,7 +52,7 @@ impl LeakingBucketLimiter {
     }
 }
 
-impl RateLimiter for LeakingBucketLimiter {
+impl RateLimiter for LeakyBucketLimiter {
     fn is_allowed(&mut self) -> bool {
         self.add_water()
     }

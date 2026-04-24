@@ -8,7 +8,7 @@
 - [x] [Token Bucket Algorithm]("https://en.wikipedia.org/wiki/Token_bucket")
 - [x] [Leaky Bucket Algorithm]("https://en.wikipedia.org/wiki/Leaky_bucket_algorithm")
 - [x] [Fixed Window Algorithm]("#")
-- [ ] [Sliding Window Algorithm]("#")
+- [x] [Sliding Window Log Algorithm]("#")
 
 ## Usage
 
@@ -25,3 +25,4 @@ Server runs on `http://localhost:8000`
 - `GET /limited/tb` - An endpoint protected by the Token Bucket algorithm.
 - `GET /limited/lb` - An endpoint protected by the Leaky Bucket algorithm.
 - `GET /limited/fw` - An endpoint protected by the Fixed Window algorithm.
+- `GET /limited/swl` - An endpoint protected by the Sliding Window Log algorithm.

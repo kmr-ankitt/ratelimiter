@@ -28,7 +28,7 @@ impl FixedWindowLimiter {
         }
     }
 
-    pub fn reset(&mut self) {
+    fn reset(&mut self) {
         self.current_count = 0;
         self.window_start = Instant::now();
     }

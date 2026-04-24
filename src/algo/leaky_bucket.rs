@@ -30,7 +30,7 @@ impl LeakyBucketLimiter {
         }
     }
 
-    pub fn leak(&mut self) {
+    fn leak(&mut self) {
         let now = Instant::now();
         let elapsed = now.duration_since(self.last_leak_time).as_secs_f64();
 
@@ -40,7 +40,7 @@ impl LeakyBucketLimiter {
         self.last_leak_time = now;
     }
 
-    pub fn add_water(&mut self) -> bool {
+    fn add_water(&mut self) -> bool {
         self.leak();
 
         if self.water >= self.bucket_size as f64 {

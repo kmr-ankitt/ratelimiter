@@ -31,7 +31,7 @@ impl TokenBucketLimiter {
         }
     }
 
-    pub fn consume(&mut self) -> bool {
+    fn consume(&mut self) -> bool {
         self.refill();
 
         if self.tokens > 0 {
@@ -42,7 +42,7 @@ impl TokenBucketLimiter {
         }
     }
 
-    pub fn refill(&mut self) {
+    fn refill(&mut self) {
         let now = Instant::now();
         let elapsed = now.duration_since(self.last_refill_time).as_secs_f64();
 

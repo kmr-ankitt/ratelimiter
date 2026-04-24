@@ -9,6 +9,7 @@
 - [x] [Leaky Bucket Algorithm]("https://en.wikipedia.org/wiki/Leaky_bucket_algorithm")
 - [x] [Fixed Window Algorithm]("#")
 - [x] [Sliding Window Log Algorithm]("#")
+- [x] [Sliding Window Counter ALgorithm]("#")
 
 ## Usage
 
@@ -26,3 +27,4 @@ Server runs on `http://localhost:8000`
 - `GET /limited/lb` - An endpoint protected by the Leaky Bucket algorithm.
 - `GET /limited/fw` - An endpoint protected by the Fixed Window algorithm.
 - `GET /limited/swl` - An endpoint protected by the Sliding Window Log algorithm.
+- `GET /limited/swc` - An endpoint protected by the Sliding Window Counter algorithm.

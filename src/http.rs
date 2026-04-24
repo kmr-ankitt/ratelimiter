@@ -54,6 +54,16 @@ async fn limited_swl(data: web::Data<Mutex<RateLimiterAlgo>>) -> impl Responder 
     }
 }
 
+#[get("/limited/swc")]
+async fn limited_swc(data: web::Data<Mutex<RateLimiterAlgo>>) -> impl Responder {
+    let mut ratelimiter = data.lock().unwrap();
+    if ratelimiter.is_allowed() {
+        HttpResponse::Ok().body("Allowed! Welcome :)")
+    } else {
+        HttpResponse::TooManyRequests().body("Too many requests! Please try again later.")
+    }
+}
+
 #[get("/unlimited")]
 async fn unlimited() -> impl Responder {
     HttpResponse::Ok().body("Unlimited! Let's go :)")
@@ -80,17 +90,27 @@ pub async fn run() -> std::io::Result<()> {
             crate::algo::sliding_window_log::SlidingWindowLogLimiter::new(5, 5),
         )));
 
+    let sliding_window_counter_rate_limiter =
+        web::Data::new(Mutex::new(RateLimiterAlgo::SlidingWindowCounter(
+            crate::algo::sliding_window_counter::SlidingWindowCounterLimiter::new(
+                5,
+                std::time::Duration::from_secs(5),
+            ),
+        )));
+
     HttpServer::new(move || {
         actix_web::App::new()
             .app_data(token_bucket_rate_limiter.clone())
             .app_data(leaky_bucket_rate_limiter.clone())
             .app_data(fixed_window_rate_limiter.clone())
             .app_data(sliding_window_log_rate_limiter.clone())
+            .app_data(sliding_window_counter_rate_limiter.clone())
             .service(index)
             .service(limited_tb)
             .service(limited_lb)
             .service(limited_fw)
             .service(limited_swl)
+            .service(limited_swc)
             .service(unlimited)
     })
     .bind(("127.0.0.1", 8000))?

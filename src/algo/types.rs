@@ -1,6 +1,7 @@
 use crate::{
     algo::{
         fixed_window::FixedWindowLimiter, leaky_bucket::LeakyBucketLimiter,
+        sliding_window_counter::SlidingWindowCounterLimiter,
         sliding_window_log::SlidingWindowLogLimiter, token_bucket::TokenBucketLimiter,
     },
     ratelimiter::RateLimiter,
@@ -11,6 +12,7 @@ pub enum RateLimiterAlgo {
     LeakyBucket(LeakyBucketLimiter),
     FixedWindow(FixedWindowLimiter),
     SlidingWindowLog(SlidingWindowLogLimiter),
+    SlidingWindowCounter(SlidingWindowCounterLimiter),
 }
 
 impl RateLimiter for RateLimiterAlgo {
@@ -21,6 +23,9 @@ impl RateLimiter for RateLimiterAlgo {
             RateLimiterAlgo::FixedWindow(fixed_window) => fixed_window.is_allowed(),
             RateLimiterAlgo::SlidingWindowLog(sliding_window_log) => {
                 sliding_window_log.is_allowed()
+            }
+            RateLimiterAlgo::SlidingWindowCounter(sliding_window_counter) => {
+                sliding_window_counter.is_allowed()
             }
         }
     }

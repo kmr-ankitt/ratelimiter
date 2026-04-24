@@ -2,7 +2,10 @@ use actix_web::{HttpResponse, HttpServer, Responder, get, web};
 use std::sync::Mutex;
 
 use crate::{
-    algo::{RateLimiterAlgo, leaking_bucket, token_bucket::TokenBucketLimiter},
+    algo::{
+        RateLimiterAlgo, fixed_window::FixedWindowLimiter, leaking_bucket::LeakingBucketLimiter,
+        token_bucket::TokenBucketLimiter,
+    },
     ratelimiter::RateLimiter,
 };
 
@@ -31,6 +34,16 @@ async fn limited_lb(data: web::Data<Mutex<RateLimiterAlgo>>) -> impl Responder {
     }
 }
 
+#[get("/limited/fw")]
+async fn limited_fw(data: web::Data<Mutex<RateLimiterAlgo>>) -> impl Responder {
+    let mut ratelimiter = data.lock().unwrap();
+    if ratelimiter.is_allowed() {
+        HttpResponse::Ok().body("Allowed! Welcome :)")
+    } else {
+        HttpResponse::TooManyRequests().body("Too many requests! Please try again later.")
+    }
+}
+
 #[get("/unlimited")]
 async fn unlimited() -> impl Responder {
     HttpResponse::Ok().body("Unlimited! Let's go :)")
@@ -45,16 +58,22 @@ pub async fn run() -> std::io::Result<()> {
     )));
 
     let leaking_bucket_rate_limiter = web::Data::new(Mutex::new(RateLimiterAlgo::LeakingBucket(
-        leaking_bucket::LeakingBucketLimiter::new(5, 1.0),
+        LeakingBucketLimiter::new(5, 1.0),
+    )));
+
+    let fixed_window_rate_limiter = web::Data::new(Mutex::new(RateLimiterAlgo::FixedWindow(
+        FixedWindowLimiter::new(5, std::time::Duration::from_secs(5)),
     )));
 
     HttpServer::new(move || {
         actix_web::App::new()
             .app_data(token_bucket_rate_limiter.clone())
             .app_data(leaking_bucket_rate_limiter.clone())
+            .app_data(fixed_window_rate_limiter.clone())
             .service(index)
             .service(limited_tb)
             .service(limited_lb)
+            .service(limited_fw)
             .service(unlimited)
     })
     .bind(("127.0.0.1", 8000))?

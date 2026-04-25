@@ -31,6 +31,72 @@ async fn limited(data: web::Data<Mutex<RateLimiterAlgo>>) -> impl Responder {
     }
 }
 
+#[get("/benchmark")]
+async fn benchmark() -> impl Responder {
+    use std::{thread, time::Duration, time::Instant};
+    let n = 100_000;
+
+    // Token Bucket
+    let mut tb = TokenBucketLimiter::new(1000, 1000.0);
+    let start = Instant::now();
+    for i in 0..n {
+        if i % 100 == 0 {
+            thread::sleep(Duration::from_micros(50));
+        }
+        let _ = tb.is_allowed();
+    }
+    let tb_time = start.elapsed();
+
+    // Leaky Bucket
+    let mut lb = LeakyBucketLimiter::new(1000, 1000.0);
+    let start = Instant::now();
+    for i in 0..n {
+        if i % 100 == 0 {
+            thread::sleep(Duration::from_micros(50));
+        }
+        let _ = lb.is_allowed();
+    }
+    let lb_time = start.elapsed();
+
+    // Fixed Window
+    let mut fw = FixedWindowLimiter::new(1000, std::time::Duration::from_secs(1));
+    let start = Instant::now();
+    for i in 0..n {
+        if i % 100 == 0 {
+            thread::sleep(Duration::from_micros(50));
+        }
+        let _ = fw.is_allowed();
+    }
+    let fw_time = start.elapsed();
+
+    // Sliding Window Log
+    let mut swl = SlidingWindowLogLimiter::new(1000, 1);
+    let start = Instant::now();
+    for i in 0..n {
+        if i % 100 == 0 {
+            thread::sleep(Duration::from_micros(50));
+        }
+        let _ = swl.is_allowed();
+    }
+    let swl_time = start.elapsed();
+
+    // Sliding Window Counter
+    let mut swc = SlidingWindowCounterLimiter::new(1000, std::time::Duration::from_secs(1));
+    let start = Instant::now();
+    for i in 0..n {
+        if i % 100 == 0 {
+            thread::sleep(Duration::from_micros(50));
+        }
+        let _ = swc.is_allowed();
+    }
+    let swc_time = start.elapsed();
+
+    HttpResponse::Ok().body(format!(
+        "TokenBucket: {:?}\nLeakyBucket: {:?}\nFixedWindow: {:?}\nSlidingLog: {:?}\nSlidingCounter: {:?}",
+        tb_time, lb_time, fw_time, swl_time, swc_time
+    ))
+}
+
 #[actix_web::main]
 pub async fn run() -> std::io::Result<()> {
     println!("Server running at http://localhost:8000");
@@ -58,6 +124,7 @@ pub async fn run() -> std::io::Result<()> {
     HttpServer::new(move || {
         actix_web::App::new()
             .service(index)
+            .service(benchmark)
             .service(unlimited)
             // Token Bucket
             .service(

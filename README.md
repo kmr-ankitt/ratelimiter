@@ -28,3 +28,26 @@ Server runs on `http://localhost:8000`
 - `GET /limited/fw` - An endpoint protected by the Fixed Window algorithm.
 - `GET /limited/swl` - An endpoint protected by the Sliding Window Log algorithm.
 - `GET /limited/swc` - An endpoint protected by the Sliding Window Counter algorithm.
+
+## Benchmark
+
+![Benchmark](./assets/benchmark.png)
+
+| Algorithm       | Avg Time |
+| --------------- | -------- |
+| Fixed Window    | ~120 ms  |
+| Sliding Log     | ~123 ms  |
+| Sliding Counter | ~126 ms  |
+| Leaky Bucket    | ~126 ms  |
+| Token Bucket    | ~128 ms  |
+
+## Notes
+
+* All algorithms have similar runtime cost
+* Differences come from fairness and memory usage
+
+## Conclusion
+
+* Token Bucket / Sliding Counter → best tradeoff
+* Fixed Window → fastest but bursty
+* Sliding Log → accurate but higher memory

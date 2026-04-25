@@ -5,11 +5,11 @@
 
 ## Algorithms
 
-- [x] [Token Bucket Algorithm]("https://en.wikipedia.org/wiki/Token_bucket")
-- [x] [Leaky Bucket Algorithm]("https://en.wikipedia.org/wiki/Leaky_bucket_algorithm")
-- [x] [Fixed Window Algorithm]("#")
-- [x] [Sliding Window Log Algorithm]("#")
-- [x] [Sliding Window Counter ALgorithm]("#")
+- [x] Token Bucket Algorithm
+- [x] Leaky Bucket Algorithm
+- [x] Fixed Window Algorithm
+- [x] Sliding Window Log Algorithm
+- [x] Sliding Window Counter ALgorithm
 
 ## Usage
 
